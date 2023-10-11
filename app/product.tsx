@@ -35,7 +35,7 @@ export default function ProductList() {
     price: 0,
   });
 
-  const handleClick = (e) => {
+  const handleClick = (e: any) => {
     setNewProduct({ ...newProduct, [e.target.name]: e.target.value });
   };
 
