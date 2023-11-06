@@ -9,8 +9,8 @@ export default function Menu() {
   return (
     <AppBar position="static">
       <Toolbar>
-        <Button color="inherit" variant={pathname === "/product" ? "outlined" : "text"} onClick={() => router.push("/product")}>主頁面</Button>
-        <Button color="inherit" variant={pathname === "/" ? "outlined" : "text"} onClick={() => router.push("/")}>404</Button>
+        <Button color="inherit" variant={pathname === "/account" ? "outlined" : "text"} onClick={() => router.push("/account")}>主頁面</Button>
+        <Button color="inherit" variant={pathname === "/product" ? "outlined" : "text"} onClick={() => router.push("/product")}>產品列表</Button>
       </Toolbar>
     </AppBar>
   );

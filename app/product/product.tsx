@@ -19,7 +19,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from '@mui/icons-material/Edit';
-import useRead from "./read";
+import useRead from "./readData";
 import { Product } from "../_settings/interfaces";
 
 export default function ProductList() {
