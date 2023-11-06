@@ -1,36 +1,64 @@
 "use client"
-import { collection, getDocs, addDoc, getFirestore } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore, orderBy, query, updateDoc } from "firebase/firestore";
 import app from "@/app/_firebase/Config";
 import { useState, useEffect } from "react";
+import { Product } from "../_settings/interfaces";
 
 function useRead() {
   const db = getFirestore(app);
-  const [products, setProducts] = useState<{ desc: string; price: number }[]>([]);
- 
+  const [products, setProducts] = useState<Product[]>([]);
+  const [updated, setUpdated] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
-      let data: { desc: string, price: number }[] = [];
-      const querySnapshot = await getDocs(collection(db, "FAQtest"));
+      setIsLoading(true);
+      let data: Product[] = [];
+      const productRef = collection(db, "FAQtest")
+      const productQuery = query(productRef, orderBy("price"));
+      const querySnapshot = await getDocs(productQuery);
       querySnapshot.forEach((doc) => {
-        data.push({ desc: doc.data().desc, price: doc.data().price })
+        data.push({ id: doc.id, desc: doc.data().desc, price: doc.data().price })
         console.log(`${doc.id} => ${doc.data()}`);
       });
       setProducts(() => [...data]);
+      setIsLoading(false);
     }
     fetchData();
-  }, [db]);
+  }, [db, updated]);
 
-  async function addProduct(product: { desc: string, price: number }) {
+  async function addProduct(products: { desc: string, price: number }) {
     const db = getFirestore(app);
     const docRef = await addDoc(collection(db, "FAQtest"),
-      { desc: product.desc, price: product.price });
+      { desc: products.desc, price: products.price });
     console.log("Document written with ID: ", docRef.id);
+    setUpdated((currentValue) => currentValue + 1)
   }
 
+  async function deleteProduct(id: string) {
+    try {
+      const db = getFirestore(app);
+      await deleteDoc(doc(db, "FAQtest", id));
+      setUpdated((currentValue) => currentValue + 1)
+    }
+    catch (error) {
+      console.error(error);
+    }
+  }
 
+  async function updateProduct(product: Product)  {
+    try {
+      const db = getFirestore(app);
+      await updateDoc(doc(db, "FAQtest", product.id),{ desc: product.desc, price: product.price });
+      setUpdated((currentValue) => currentValue + 1)
+    }
+    catch (error) {
+      console.error(error);
+    }
+  }
 
-  return [products, setProducts, addProduct] as const;
+  return [products, addProduct, deleteProduct, updateProduct, isLoading] as const;
+
 }
 
 export default useRead;
