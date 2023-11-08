@@ -1,5 +1,5 @@
 "use client"
-import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore, orderBy, query, updateDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore, orderBy, query, serverTimestamp, updateDoc } from "firebase/firestore";
 import app from "@/app/_firebase/Config";
 import { useState, useEffect } from "react";
 import { Product } from "../_settings/interfaces";
@@ -9,13 +9,14 @@ function useRead() {
   const [products, setProducts] = useState<Product[]>([]);
   const [updated, setUpdated] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [order, setOrder] = useState("desc");
 
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
       let data: Product[] = [];
       const productRef = collection(db, "FAQtest")
-      const productQuery = query(productRef, orderBy("price"));
+      const productQuery = query(productRef, orderBy("askTime",order));
       const querySnapshot = await getDocs(productQuery);
       querySnapshot.forEach((doc) => {
         data.push({ id: doc.id, desc: doc.data().desc, price: doc.data().price })
@@ -25,12 +26,12 @@ function useRead() {
       setIsLoading(false);
     }
     fetchData();
-  }, [db, updated]);
+  }, [db, updated,order]);
 
   async function addProduct(products: { desc: string, price: number }) {
     const db = getFirestore(app);
     const docRef = await addDoc(collection(db, "FAQtest"),
-      { desc: products.desc, price: products.price });
+      { desc: products.desc, price: products.price,askTime:serverTimestamp() });
     console.log("Document written with ID: ", docRef.id);
     setUpdated((currentValue) => currentValue + 1)
   }
@@ -57,7 +58,7 @@ function useRead() {
     }
   }
 
-  return [products, addProduct, deleteProduct, updateProduct, isLoading] as const;
+  return [products, addProduct, deleteProduct, updateProduct, isLoading, order, setOrder] as const;
 
 }
 

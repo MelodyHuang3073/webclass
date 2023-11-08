@@ -21,11 +21,15 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from '@mui/icons-material/Edit';
 import useRead from "./readData";
 import { Product } from "../_settings/interfaces";
+import { useEffect } from "react";
+
 
 export default function ProductList() {
-  const [products, addProduct, deleteProduct, updateProduct, isLoading] = useRead();
+  const [products, addProduct, deleteProduct, updateProduct, isLoading, order, setOrder] = useRead();
   const [newProduct, setNewProduct] = useState<Product>({ id: "", desc: "", price: 0, });
   const [status, setStatus] = useState({ visible: false });
+  const [search, setSearch] = useState("");
+  const [filterList,setFilterList] = useState<Product[]>([]);
 
   function addOrUpdate() {
     if (newProduct.id === "") {
@@ -63,6 +67,17 @@ export default function ProductList() {
     }
   }
 
+  const searchFilter=()=>{
+    setFilterList(products.filter((x)=>x.desc.toLowerCase().includes(search.toLowerCase())))
+  }
+
+  const orderIsChange = (e:any) => {
+    order === "desc" ? setOrder("asc") : setOrder("desc");
+  };
+
+  useEffect(() => {
+    searchFilter()
+  }, [products,search]);
   return (
     <Box
       sx={{
@@ -85,12 +100,21 @@ export default function ProductList() {
       >
         <AddIcon />
       </Fab>
-
-      <Dialog open={status.visible} onClose={hide} aria-labelledby={newProduct.id === "" ? "新增產品" : "更新產品"}>
-        <DialogTitle>{newProduct.id === "" ? "新增產品" : "更新產品"}</DialogTitle>
+      <button type="button" onClick={orderIsChange}>
+              {order === "desc" ? (
+                "up"
+              ) : (
+                "down"
+              )}
+            </button>
+      <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
+      <TextField id="outlined-basic" label="search" variant="outlined" value={search} onChange={(e)=>setSearch(e.target.value)}/>
+      </Box>
+      <Dialog open={status.visible} onClose={hide} aria-labelledby={newProduct.id === "" ? "新增產品" : "修改QA"}>
+        <DialogTitle>{newProduct.id === "" ? "新增產品" : "修改QA"}</DialogTitle>
         <DialogContent>
-          <TextField label="產品描述" variant="outlined" name="desc" value={newProduct.desc} onChange={handleClick} /><p />
-          <TextField type="number" label="產品價格" variant="outlined" name="price" value={newProduct.price} onChange={handleClick} /><p />
+          <TextField label="question" variant="outlined" name="desc" value={newProduct.desc} onChange={handleClick} /><p />
+          <TextField type="number" label="answer" variant="outlined" name="price" value={newProduct.price} onChange={handleClick} /><p />
         </DialogContent>
         <DialogActions>
           <IconButton
@@ -104,15 +128,15 @@ export default function ProductList() {
           >
             <CloseIcon />
           </IconButton>
-          <Button variant="contained" color="primary" onClick={addOrUpdate}>{newProduct.id === "" ? "新增產品" : "更新產品"}</Button>
+          <Button variant="contained" color="primary" onClick={addOrUpdate}>{newProduct.id === "" ? "新增產品" : "修改QA"}</Button>
         </DialogActions>
       </Dialog>
       
       
 
       {isLoading ? <CircularProgress /> :
-          <List subheader="Product list" aria-label="product list">
-            {products.map((product) =>
+          <List subheader="QA" aria-label="QA">
+            {filterList.map((product) =>
               <ListItem divider key={product.desc}>
                 <ListItemText primary={product.desc} secondary={product.price}>
                 </ListItemText>

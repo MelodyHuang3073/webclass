@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <h1>輔仁大學資訊管理學系</h1>
+        <h1>QA管理</h1>
         <ThemeRegistry>
           <Menu />
           {children}

@@ -10,7 +10,7 @@ export default function Menu() {
     <AppBar position="static">
       <Toolbar>
         <Button color="inherit" variant={pathname === "/account" ? "outlined" : "text"} onClick={() => router.push("/account")}>主頁面</Button>
-        <Button color="inherit" variant={pathname === "/product" ? "outlined" : "text"} onClick={() => router.push("/product")}>產品列表</Button>
+        <Button color="inherit" variant={pathname === "/product" ? "outlined" : "text"} onClick={() => router.push("/product")}>QA管理</Button>
       </Toolbar>
     </AppBar>
   );
