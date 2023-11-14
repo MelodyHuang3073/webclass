@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Menu from './menu'
 import ThemeRegistry from "./_theme/ThemeRegistry"
+import { AuthContextProvider } from './account/AuthContext'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,8 +23,10 @@ export default function RootLayout({
       <body className={inter.className}>
         <h1>QA管理</h1>
         <ThemeRegistry>
+         <AuthContextProvider>
           <Menu />
           {children}
+         </AuthContextProvider>
         </ThemeRegistry>
       </body>
     </html>

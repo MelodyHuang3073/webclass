@@ -1,7 +1,7 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, TextField } from '@mui/material';
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
 import app from "@/app/_firebase/Config";
 import { FirebaseError } from 'firebase/app';
 
@@ -10,7 +10,7 @@ export default function Account() {
   const [account, setAccount] = useState({ email: "", password: "", name: "" });
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("註冊");
-  const [login, setLogin] = useState("未登入");
+  
   const handleChange = function (e: React.ChangeEvent<HTMLInputElement>) {
     setAccount({ ...account, [e.target.name]: e.target.value })
   }
@@ -26,7 +26,6 @@ export default function Account() {
   const logout = function (e: React.MouseEvent<HTMLElement>) {
     auth.signOut();
     setMessage("登出成功");
-    setLogin("未登入")
   }
 
   const handleSubmit = async function (e: React.MouseEvent<HTMLElement>) {
@@ -38,7 +37,6 @@ export default function Account() {
       else {
         const res = await signInWithEmailAndPassword(auth, account.email, account.password);
         setMessage(`登入成功，歡迎 ${res.user?.email}`);
-        setLogin("已登入")
       }
     }
     catch (e) {
@@ -105,7 +103,7 @@ export default function Account() {
       </div>
       <div>
         <Button variant="contained" color="secondary" onClick={logout}>
-        {login === '已登入' ? "登出" : "尚未登入"}</Button>
+        {"登出"}</Button>
       </div>
     </form>
   )
