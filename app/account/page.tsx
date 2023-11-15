@@ -1,9 +1,11 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button, TextField } from '@mui/material';
-import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider} from 'firebase/auth';
 import app from "@/app/_firebase/Config";
 import { FirebaseError } from 'firebase/app';
+import { getFirestore,collection, addDoc, getDocs, query, where} from 'firebase/firestore';
+export const db = getFirestore(app);
 
 export default function Account() {
   const auth = getAuth(app);
@@ -33,6 +35,14 @@ export default function Account() {
       if (status === "註冊") {
         const res = await createUserWithEmailAndPassword(auth, account.email, account.password);
         setMessage(`註冊成功，歡迎 ${res.user?.email}`);
+        const userCollection = collection(db, "users");
+        const docRef = await addDoc(userCollection, {
+          uid: res.user?.uid,
+          email: res.user?.email,
+          name: account.name,
+          admin: "user",
+        });
+        console.log("Document written with ID: ", docRef.id);
       }
       else {
         const res = await signInWithEmailAndPassword(auth, account.email, account.password);
@@ -78,6 +88,31 @@ export default function Account() {
 
   }
 
+  const handleGoogleSignIn = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const res = await signInWithPopup(auth, provider);
+
+      setMessage(`Google 登入成功，歡迎 ${res.user?.displayName}`);
+
+      const userCollection = collection(db, "users");
+
+      const querySnapshot = await getDocs(query(userCollection, where("uid", "==", res.user?.uid)));
+
+      if (querySnapshot.empty) {
+        await addDoc(userCollection, {
+          uid: res.user?.uid,
+          email: res.user?.email,
+          name: account.name,
+          admin: "user",
+        });
+      }
+    } catch (error) {
+      setMessage("Google 登入失敗");
+      console.error(error);
+    }
+  };
+
   return (
     <form>
       <div>
@@ -104,6 +139,11 @@ export default function Account() {
       <div>
         <Button variant="contained" color="secondary" onClick={logout}>
         {"登出"}</Button>
+      </div>
+      <div>
+        <Button variant="contained" color="secondary" onClick={handleGoogleSignIn}>
+          {"Google 登入"}
+        </Button>
       </div>
     </form>
   )
