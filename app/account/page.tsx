@@ -1,12 +1,12 @@
 'use client'
 import React, { useState } from 'react';
-import { Button, Card, CardContent, CardMedia, Input, TextField } from '@mui/material';
+import { Button, Card, CardContent, CardMedia, TextField } from '@mui/material';
 import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import app from "@/app/_firebase/Config";
 import { FirebaseError } from 'firebase/app';
-import Image from 'next/image'
 import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, setDoc, where } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+
 export default function Account() {
   const auth = getAuth(app);
   const db = getFirestore(app);
@@ -15,6 +15,7 @@ export default function Account() {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("註冊");
   const [file, setFile] = useState<File>();
+
   const handleChange = function (e: React.ChangeEvent<HTMLInputElement>) {
     setAccount({ ...account, [e.target.name]: e.target.value })
   }
@@ -75,13 +76,10 @@ export default function Account() {
         console.log(file)
         setStatus("登入成功");
 
-        // Create a reference to the image
         if (file) {
 
           const imageRef = ref(storage, file.name);
-          // 'file' comes from the Blob or File API
           await uploadBytes(imageRef, file);
-          // console.log(res)
           setMessage(`個人照片上傳成功，歡迎 ${res.user?.email}`);
           const userDoc = await setDoc(doc(db, "users", res.user.uid), { photo: file.name });
           const starsRef = ref(storage, file.name);
@@ -102,7 +100,6 @@ export default function Account() {
           if (userDoc.exists()) {
             photo = userDoc.data().photo ? userDoc.data().photo : '下載.jpg'
           }
-          // console.log(photo)
           const starsRef = ref(storage, photo);
           const photoURL = await getDownloadURL(starsRef);
           setAccount({ ...account, photo: photoURL })
@@ -196,12 +193,14 @@ export default function Account() {
 
       <div>
         <Button variant="contained" color="secondary" onClick={changeStatus}>
-          {status === '註冊' ? "已經註冊，我要登入" : "尚未註冊，我要註冊"}</Button>
+          {status === '註冊' ? "已經註冊，我要登入" : "尚未註冊，我要註冊"}
+        </Button>
       </div>
 
       <div>
         <Button variant="contained" color="secondary" onClick={logout}>
-        {"登出"}</Button>
+        {"登出"}
+        </Button>
       </div>
 
       <div>

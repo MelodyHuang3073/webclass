@@ -19,7 +19,6 @@ export const AuthContextProvider = ({
         setEmail("");
       }
   
-      //console.log(user);
       return () => {
         unsub();
       }
