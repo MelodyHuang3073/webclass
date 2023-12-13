@@ -14,7 +14,6 @@ export default function Menu() {
       <Toolbar>
         <Button color="inherit" variant={pathname === "/account" ? "outlined" : "text"} onClick={() => router.push("/account")}>主頁面</Button>
         <Button color="inherit" variant={pathname === "/product" ? "outlined" : "text"} onClick={() => router.push("/product")}>QA管理</Button>
-        <Button color="inherit" variant={pathname === "/admin" ? "outlined" : "text"} onClick={() => router.push("/admin")}>權限管理</Button>
         {authContext}
       </Toolbar>
     </AppBar>
