@@ -16,7 +16,7 @@ function useRead() {
       setIsLoading(true);
       let data: Product[] = [];
       const productRef = collection(db, "FAQtest")
-      const productQuery = query(productRef, orderBy("askTime",order));
+      const productQuery = query(productRef, orderBy("askTime","desc"));
       const querySnapshot = await getDocs(productQuery);
       querySnapshot.forEach((doc) => {
         data.push({ id: doc.id, desc: doc.data().desc, price: doc.data().price })
